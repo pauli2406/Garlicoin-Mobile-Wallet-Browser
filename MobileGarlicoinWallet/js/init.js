@@ -6,8 +6,7 @@ if (!isEmpty(window.localStorage.getItem("explorer"))) {
 }
 
 var CorsproxyURL = "http://192.168.178.62:3333/";
-
-
+var scanner;
 $( document ).ready(function() {
     window.localStorage.setItem("totalGrlc", 0);
     getSavedAddresses();
@@ -17,6 +16,12 @@ $( document ).ready(function() {
     renameWallet();
     saveSelectedCurrency();
     calculateTotal();
+    $('#btnStopQr').click(function () {
+        scanner.stop();
+        $('#qr-preview').hide();
+        $('#btnScanQr').show();
+        $('#btnStopQr').hide();
+    })
 });
 
 function saveSelectedExplorer() {
@@ -52,46 +57,43 @@ function addAddressOnClick() {
         }else{
             alert("Please scan a valid Wallet Address!");
         }
-    })
+    });
 }
 
 function scanQRCode() {
 //scan a QR-Code, save the address, if nickname is set save the nickname too. Change view to the wallet
     $('#btnScanQr').click(function () {
-        alert("to be implemented");
-        // cordova.plugins.barcodeScanner.scan(
-        //     function (result) {
-        //         if(!result.cancelled) {
-        //             var saveArray = new Array();
-        //             var nickname = $('#inNickname').val();
-        //             var checkRegex = new RegExp("(G|g|M)[a-z A-Z 0-9]{33}");
-        //             var address = checkRegex.exec(result.text);
-        //             if (address != null && !isEmpty(address[0]) && address[0].match(checkRegex)) {
-        //                 saveArray.push({address: address[0], nickname: nickname});
-        //                 window.localStorage.setItem("selectedWallet", address[0]);
-        //                 window.localStorage.setArray(address[0], saveArray);
-        //                 document.location.href = "wallet.html";
-        //             }else{
-        //                 alert("Please enter a valid Wallet Address!");
-        //             }
-        //         }
-        //     },
-        //     function (error) {
-        //         alert("Scanning failed: " + error);
-        //     },
-        //     {
-        //         preferFrontCamera: false, // iOS and Android
-        //         showFlipCameraButton: true, // iOS and Android
-        //         showTorchButton: true, // iOS and Android
-        //         torchOn: false, // Android, launch with the torch switched on (if available)
-        //         saveHistory: true, // Android, save scan history (default false)
-        //         prompt: "Place a barcode with your wallet address inside the scan area", // Android
-        //         resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
-        //         formats: "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
-        //         disableAnimations: true, // iOS
-        //         disableSuccessBeep: false // iOS and Android
-        //     }
-        // );
+        $('#qr-preview').show();
+        $('#btnScanQr').hide();
+        $('#btnStopQr').show();
+        var opts = {
+            video: document.getElementById('qr-preview')
+        };
+        scanner = new Instascan.Scanner(opts);
+        scanner.addListener('scan', function (content) {
+            var saveArray = new Array();
+            var nickname = $('#inNickname').val();
+            var checkRegex = new RegExp("(G|g|M)[a-z A-Z 0-9]{33}");
+            var address = checkRegex.exec(content);
+            if (address != null && !isEmpty(address[0]) && address[0].match(checkRegex)) {
+                saveArray.push({address: address[0], nickname: nickname});
+                window.localStorage.setItem("selectedWallet", address[0]);
+                window.localStorage.setArray(address[0], saveArray);
+                document.location.href = "wallet.html";
+            }else{
+                alert("Please enter a valid Wallet Address!");
+            }
+            scanner.stop();
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
     });
 }
 
@@ -263,7 +265,7 @@ function getTotalValue() {
         var currency = window.localStorage.getItem("currency");
         var value = window.localStorage.getItem("coin_value");
         totalAmountGRLC = precisionRound(window.localStorage.getItem("totalGrlc"),3);
-        var price
+        var price;
         if (currency == "BTC") {
             price = precisionRound(parseFloat(value) * parseFloat(totalAmountGRLC), 6);
         } else {

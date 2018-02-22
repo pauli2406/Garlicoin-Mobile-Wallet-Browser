@@ -9,6 +9,7 @@
   "author": "Marcel Pochert",
   "license": "ISC",
   "dependencies": {
-    "cors-anywhere": "^0.4.1"
+    "cors-anywhere": "^0.4.1",
+    "instascan": "^1.0.0"
   }
 }

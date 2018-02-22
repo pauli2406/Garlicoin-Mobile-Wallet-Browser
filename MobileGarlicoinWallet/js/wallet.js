@@ -53,7 +53,6 @@ function getTableData() {
                             });
                         }
                     }
-
                 }
                 document.getElementById("transTable").innerHTML = tmpl("tmpl-lastTrans", data);
             },
@@ -62,7 +61,7 @@ function getTableData() {
             }
         });
     }else {
-        $.get(base_uri + '/address/' + wallet, function (response) {
+        $.get(base_uri + '/ext/getaddress/' + wallet, function (response) {
             //Split and substring the data from the crawler to our Array with informations
             var subbed = response.substring(response.indexOf('<th class="hidden-xs">Timestamp</th>') + 1);
             subbed = subbed.substring(subbed.indexOf('<tbody>') + 1);
@@ -332,5 +331,10 @@ window.onload = function () {
     getBlockcount();
     $('#reloadTrans').click(function () {
         getData();
+    });
+    PullToRefresh.init({
+        onRefresh: function () {
+            window.location.reload();
+        }
     });
 };
