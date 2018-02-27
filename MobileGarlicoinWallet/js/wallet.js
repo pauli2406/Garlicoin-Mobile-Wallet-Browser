@@ -5,7 +5,7 @@ if(!isEmpty(window.localStorage.getItem("explorer"))){
     var base_uri = "garlicinsight.com";
 }
 
-var CorsproxyURL = "http://192.168.178.62:3333/";
+var CorsproxyURL = "https://wallet.proxy.cmd.network/";
 
 /******************************************Crawl Data from the Explorer********************************************************************/
 
@@ -58,7 +58,7 @@ function getTableData() {
                                     "transactionId": result.items[i].txid,
                                     "confirmations": result.items[i].confirmations,
                                     "amount": "+" + amount,
-                                    "fees": result.items[i].fees.
+                                    "fees": result.items[i].fees,
                                     "timestamp": timestamp
                                 });
                             }

@@ -5,7 +5,7 @@ if (!isEmpty(window.localStorage.getItem("explorer"))) {
     base_uri = "garlicinsight.com";
 }
 
-var CorsproxyURL = "http://192.168.178.62:3333/";
+var CorsproxyURL = "https://wallet.proxy.cmd.network/";
 var scanner;
 $( document ).ready(function() {
     window.localStorage.setItem("totalGrlc", 0);
